@@ -15,43 +15,47 @@
 //*****************//
 
 // some helpful macros for repeatedly applying a macro (such as ZIP or MAP)
-#define EVAL(x, ...) x(__VA_ARGS__)
-#define JOIN(n, ...) JOIN_##n(__VA_ARGS__)
-#define JOIN_9(func, join, ...) JOIN_8(func, join, __VA_ARGS__) join EVAL(func, 8, __VA_ARGS__)
-#define JOIN_8(func, join, ...) JOIN_7(func, join, __VA_ARGS__) join EVAL(func, 7, __VA_ARGS__)
-#define JOIN_7(func, join, ...) JOIN_6(func, join, __VA_ARGS__) join EVAL(func, 6, __VA_ARGS__)
-#define JOIN_6(func, join, ...) JOIN_5(func, join, __VA_ARGS__) join EVAL(func, 5, __VA_ARGS__)
-#define JOIN_5(func, join, ...) JOIN_4(func, join, __VA_ARGS__) join EVAL(func, 4, __VA_ARGS__)
-#define JOIN_4(func, join, ...) JOIN_3(func, join, __VA_ARGS__) join EVAL(func, 3, __VA_ARGS__)
-#define JOIN_3(func, join, ...) JOIN_2(func, join, __VA_ARGS__) join EVAL(func, 2, __VA_ARGS__)
-#define JOIN_2(func, join, ...) JOIN_1(func, join, __VA_ARGS__) join EVAL(func, 1, __VA_ARGS__)
-#define JOIN_1(func, join, ...)                                      EVAL(func, 0, __VA_ARGS__)
+#define _MATRIX_EVAL(x, ...) x(__VA_ARGS__)
+#define _MATRIX_JOIN(n, ...) _MATRIX_JOIN_##n(__VA_ARGS__)
+#define _MATRIX_JOIN_9(func, join, ...) _MATRIX_JOIN_8(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 8, __VA_ARGS__)
+#define _MATRIX_JOIN_8(func, join, ...) _MATRIX_JOIN_7(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 7, __VA_ARGS__)
+#define _MATRIX_JOIN_7(func, join, ...) _MATRIX_JOIN_6(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 6, __VA_ARGS__)
+#define _MATRIX_JOIN_6(func, join, ...) _MATRIX_JOIN_5(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 5, __VA_ARGS__)
+#define _MATRIX_JOIN_5(func, join, ...) _MATRIX_JOIN_4(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 4, __VA_ARGS__)
+#define _MATRIX_JOIN_4(func, join, ...) _MATRIX_JOIN_3(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 3, __VA_ARGS__)
+#define _MATRIX_JOIN_3(func, join, ...) _MATRIX_JOIN_2(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 2, __VA_ARGS__)
+#define _MATRIX_JOIN_2(func, join, ...) _MATRIX_JOIN_1(func, join, __VA_ARGS__) join _MATRIX_EVAL(func, 1, __VA_ARGS__)
+#define _MATRIX_JOIN_1(func, join, ...)                                              _MATRIX_EVAL(func, 0, __VA_ARGS__)
 
 // the difference between JOIN and JOINC is that JOINC uses a comma as the join.
 // this is necessary because passing a comma to a macro is ... difficult.
-#define JOINC(n, ...) JOINC_##n(__VA_ARGS__)
-#define JOINC_9(func, ...) JOINC_8(func, __VA_ARGS__) , EVAL(func, 8, __VA_ARGS__)
-#define JOINC_8(func, ...) JOINC_7(func, __VA_ARGS__) , EVAL(func, 7, __VA_ARGS__)
-#define JOINC_7(func, ...) JOINC_6(func, __VA_ARGS__) , EVAL(func, 6, __VA_ARGS__)
-#define JOINC_6(func, ...) JOINC_5(func, __VA_ARGS__) , EVAL(func, 5, __VA_ARGS__)
-#define JOINC_5(func, ...) JOINC_4(func, __VA_ARGS__) , EVAL(func, 4, __VA_ARGS__)
-#define JOINC_4(func, ...) JOINC_3(func, __VA_ARGS__) , EVAL(func, 3, __VA_ARGS__)
-#define JOINC_3(func, ...) JOINC_2(func, __VA_ARGS__) , EVAL(func, 2, __VA_ARGS__)
-#define JOINC_2(func, ...) JOINC_1(func, __VA_ARGS__) , EVAL(func, 1, __VA_ARGS__)
-#define JOINC_1(func, ...)                              EVAL(func, 0, __VA_ARGS__)
+#define _MATRIX_JOINC(n, ...) _MATRIX_JOINC_##n(__VA_ARGS__)
+#define _MATRIX_JOINC_9(func, ...) _MATRIX_JOINC_8(func, __VA_ARGS__) , _MATRIX_EVAL(func, 8, __VA_ARGS__)
+#define _MATRIX_JOINC_8(func, ...) _MATRIX_JOINC_7(func, __VA_ARGS__) , _MATRIX_EVAL(func, 7, __VA_ARGS__)
+#define _MATRIX_JOINC_7(func, ...) _MATRIX_JOINC_6(func, __VA_ARGS__) , _MATRIX_EVAL(func, 6, __VA_ARGS__)
+#define _MATRIX_JOINC_6(func, ...) _MATRIX_JOINC_5(func, __VA_ARGS__) , _MATRIX_EVAL(func, 5, __VA_ARGS__)
+#define _MATRIX_JOINC_5(func, ...) _MATRIX_JOINC_4(func, __VA_ARGS__) , _MATRIX_EVAL(func, 4, __VA_ARGS__)
+#define _MATRIX_JOINC_4(func, ...) _MATRIX_JOINC_3(func, __VA_ARGS__) , _MATRIX_EVAL(func, 3, __VA_ARGS__)
+#define _MATRIX_JOINC_3(func, ...) _MATRIX_JOINC_2(func, __VA_ARGS__) , _MATRIX_EVAL(func, 2, __VA_ARGS__)
+#define _MATRIX_JOINC_2(func, ...) _MATRIX_JOINC_1(func, __VA_ARGS__) , _MATRIX_EVAL(func, 1, __VA_ARGS__)
+#define _MATRIX_JOINC_1(func, ...)                                      _MATRIX_EVAL(func, 0, __VA_ARGS__)
 
 // zip two indexable objects together using some operation.
-#define ZIP(i, l, r, op) (l[i] op r[i])
+#define _MATRIX_ZIP(i, l, r, op) (l[i] op r[i])
 
 // map an indexable object using some left-handed operation.
-#define LMAP(i, s, op) (op s[i])
+#define _MATRIX_LMAP(i, s, op) (op s[i])
 
 // map an indexable object using some right-handed operation.
-#define RMAP(i, s, op) (s[i] op)
+#define _MATRIX_RMAP(i, s, op) (s[i] op)
 
 //*********************//
 //  DEFINITION MACROS  //
 //*********************//
+
+//***********//
+//  VECTORS  //
+//***********//
 
 // defines an n-element vector
 #define DEFINE_VEC(n, ...) \
@@ -67,11 +71,11 @@
         } \
         __VA_ARGS__ \
     } Vec##n; \
-    DEFINE_OP_VV2V(n, operator+, +) /* vector addition */       \
-    DEFINE_OP_VV2V(n, operator-, -) /* vector subtraction */    \
-    DEFINE_OP_SCALE(n)              /* scalar multiplication */ \
-    DEFINE_OP_DOT(n)                /* vector dot product */    \
-    DEFINE_OP_NORM(n)               /* vector normalization */
+    _MATRIX_DEFINE_OP_VV2V(n, operator+, +) /* vector addition */       \
+    _MATRIX_DEFINE_OP_VV2V(n, operator-, -) /* vector subtraction */    \
+    _MATRIX_DEFINE_OP_SCALE(n)              /* scalar multiplication */ \
+    _MATRIX_DEFINE_OP_DOT(n)                /* vector dot product */    \
+    _MATRIX_DEFINE_OP_NORM(n)               /* vector normalization */
 
 ///
 // Element-wise operation between two vectors.
@@ -82,9 +86,9 @@
 //
 // @return  The result of applying the operation
 ///
-#define DEFINE_OP_VV2V(n, def, op) \
+#define _MATRIX_DEFINE_OP_VV2V(n, def, op) \
     inline Vec##n def (const Vec##n &l, const Vec##n &r) { \
-        return (Vec##n) { JOINC(n, ZIP, l, r, op) }; \
+        return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_ZIP, l, r, op) }; \
     }
 
 ///
@@ -95,9 +99,9 @@
 //
 // @return  The dot product of the two vectors
 ///
-#define DEFINE_OP_DOT(n) \
+#define _MATRIX_DEFINE_OP_DOT(n) \
     inline float operator*(const Vec##n &l, const Vec##n &r) { \
-        return JOIN(n, ZIP, +, l, r, *); \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, +, l, r, *); \
     }
 
 ///
@@ -108,12 +112,12 @@
 //
 // @return  The scaled vector
 ///
-#define DEFINE_OP_SCALE(n) \
+#define _MATRIX_DEFINE_OP_SCALE(n) \
     inline Vec##n operator*(const Vec##n &v, const float s) { \
-        return (Vec##n) { JOINC(n, RMAP, v, * s) }; \
+        return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_RMAP, v, * s) }; \
     } \
     inline Vec##n operator*(const float s, const Vec##n &v) { \
-        return (Vec##n) { JOINC(n, LMAP, v, s *) }; \
+        return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, v, s *) }; \
     }
 
 ///
@@ -123,14 +127,18 @@
 //
 // @return  The normalized vector
 ///
-#define DEFINE_OP_NORM(n) \
+#define _MATRIX_DEFINE_OP_NORM(n) \
     inline Vec##n operator~(const Vec##n &v) { \
         float len = sqrt(v * v); \
-        return (Vec##n) { JOINC(n, RMAP, v, / len) }; \
+        return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_RMAP, v, / len) }; \
     }
 
+//************//
+//  MATRICES  //
+//************//
+
 // macro for writing a column vector to part of an array
-#define MAT_WRITE(i, m, s, n) (m[i].write(&s[i * n]))
+#define _MATRIX_MAT_WRITE(i, m, s, n) (m[i].write(&s[i * n]))
 
 // A column-majorly ordered nxn Matrix
 #define DEFINE_MAT(n, ...) \
@@ -145,12 +153,12 @@
          * contiguous memory for arrays of structs. \
          */ \
         inline void write(float *out) { \
-            JOIN(n, MAT_WRITE, ;, cols, out, n); \
+            _MATRIX_JOIN(n, _MATRIX_MAT_WRITE, ;, cols, out, n); \
         } \
         __VA_ARGS__ \
     } Mat##n; \
-    DEFINE_OP_MV2V(n) \
-    DEFINE_OP_MM2M(n)
+    _MATRIX_DEFINE_OP_MV2V(n) \
+    _MATRIX_DEFINE_OP_MM2M(n)
 
 ///
 // Right multiplication of a vector with a matrix
@@ -160,9 +168,9 @@
 //
 // @return  The result of the right-multiplication (m * v)
 ///
-#define DEFINE_OP_MV2V(n) \
+#define _MATRIX_DEFINE_OP_MV2V(n) \
     inline Vec##n operator*(const Mat##n &m, const Vec##n v) { \
-        return JOIN(n, ZIP, +, m, v, *); \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, +, m, v, *); \
     }
 
 ///
@@ -173,9 +181,9 @@
 //
 // @return  The result of the matrix multiplication (l * r)
 ///
-#define DEFINE_OP_MM2M(n) \
+#define _MATRIX_DEFINE_OP_MM2M(n) \
     inline Mat##n operator*(const Mat##n &l, const Mat##n &r) { \
-        return (Mat##n) { JOINC(n, LMAP, r, l *) }; \
+        return (Mat##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, r, l *) }; \
     }
 
 #endif
