@@ -13,7 +13,8 @@ Vectors up to 9 elements, and matrices up to 9x9 are supported (matrices must be
 
 // Define a 3-element vector.
 // Expands to a definition of Vec3, including basic operations such as
-// addition, subtraction, scalar multiplication, dot product, and normalization.
+// addition (+), subtraction (-), scalar multiplication (*), dot product (*),
+// length retrieval (unary +), normalization (~), and equality testing (==).
 DEFINE_VEC(3);
 
 // Initialize using standard struct syntax.
@@ -29,6 +30,9 @@ float y = v2[1]; // 5
 
 // Now we can define a 3x3 matrix in a similar way.
 // Note that Vec3 must be previously defined for this to work.
+// Includes basic operations such as addition (+), subtraction (-),
+// scalar multiplication (*), vector left- and right-multiplication (*),
+// matrix multiplcation (*), and equality testing (==).
 DEFINE_MAT(3);
 
 // Initialize using struct syntax. Note that the extra braces are optional.

@@ -71,11 +71,14 @@
         } \
         __VA_ARGS__ \
     } Vec##n; \
-    _MATRIX_DEFINE_OP_VV2V(n, operator+, +) /* vector addition */       \
-    _MATRIX_DEFINE_OP_VV2V(n, operator-, -) /* vector subtraction */    \
-    _MATRIX_DEFINE_OP_SCALE(n)              /* scalar multiplication */ \
-    _MATRIX_DEFINE_OP_DOT(n)                /* vector dot product */    \
-    _MATRIX_DEFINE_OP_NORM(n)               /* vector normalization */
+    _MATRIX_DEFINE_VEC_OP_VV2V(n, operator+, +) /* vector addition */       \
+    _MATRIX_DEFINE_VEC_OP_VV2V(n, operator-, -) /* vector subtraction */    \
+    _MATRIX_DEFINE_VEC_OP_SCALE(n)              /* scalar multiplication */ \
+    _MATRIX_DEFINE_VEC_OP_DOT(n)                /* vector dot product */    \
+    _MATRIX_DEFINE_VEC_OP_LENGTH(n)             /* vector length */         \
+    _MATRIX_DEFINE_VEC_OP_NORM(n)               /* vector normalization */  \
+    _MATRIX_DEFINE_VEC_OP_EQUAL(n)              /* vector equality */
+
 
 ///
 // Element-wise operation between two vectors.
@@ -86,7 +89,7 @@
 //
 // @return  The result of applying the operation
 ///
-#define _MATRIX_DEFINE_OP_VV2V(n, def, op) \
+#define _MATRIX_DEFINE_VEC_OP_VV2V(n, def, op) \
     inline Vec##n def (const Vec##n &l, const Vec##n &r) { \
         return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_ZIP, l, r, op) }; \
     }
@@ -99,7 +102,7 @@
 //
 // @return  The dot product of the two vectors
 ///
-#define _MATRIX_DEFINE_OP_DOT(n) \
+#define _MATRIX_DEFINE_VEC_OP_DOT(n) \
     inline float operator*(const Vec##n &l, const Vec##n &r) { \
         return _MATRIX_JOIN(n, _MATRIX_ZIP, +, l, r, *); \
     }
@@ -112,12 +115,24 @@
 //
 // @return  The scaled vector
 ///
-#define _MATRIX_DEFINE_OP_SCALE(n) \
+#define _MATRIX_DEFINE_VEC_OP_SCALE(n) \
     inline Vec##n operator*(const Vec##n &v, const float s) { \
         return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_RMAP, v, * s) }; \
     } \
     inline Vec##n operator*(const float s, const Vec##n &v) { \
         return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, v, s *) }; \
+    }
+
+///
+// Vector length calculation
+//
+// @param v The vector
+//
+// @return  The length of the vector
+///
+#define _MATRIX_DEFINE_VEC_OP_LENGTH(n) \
+    inline float operator+(const Vec##n &v) { \
+        return sqrt(v * v); \
     }
 
 ///
@@ -127,10 +142,23 @@
 //
 // @return  The normalized vector
 ///
-#define _MATRIX_DEFINE_OP_NORM(n) \
+#define _MATRIX_DEFINE_VEC_OP_NORM(n) \
     inline Vec##n operator~(const Vec##n &v) { \
-        float len = sqrt(v * v); \
+        float len = +v; \
         return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_RMAP, v, / len) }; \
+    }
+
+///
+// Vector equality
+//
+// @param l The first vector
+// @param r The second vector
+//
+// @return  True iff the two vectors have all equal elements
+///
+#define _MATRIX_DEFINE_VEC_OP_EQUAL(n) \
+    inline bool operator==(const Vec##n &l, const Vec##n &r) { \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, &&, l, r, ==); \
     }
 
 //************//
@@ -157,8 +185,43 @@
         } \
         __VA_ARGS__ \
     } Mat##n; \
-    _MATRIX_DEFINE_OP_MV2V(n) \
-    _MATRIX_DEFINE_OP_MM2M(n)
+    _MATRIX_DEFINE_MAT_OP_MM2M(n, operator+, +) /* matrix addition */              \
+    _MATRIX_DEFINE_MAT_OP_MM2M(n, operator-, -) /* matrix subtraction */           \
+    _MATRIX_DEFINE_MAT_OP_SCALE(n)              /* scalar multiplication */        \
+    _MATRIX_DEFINE_MAT_OP_RVEC_MULT(n)          /* matrix-vector multiplcation */  \
+    _MATRIX_DEFINE_MAT_OP_LVEC_MULT(n)          /* vector-matrix multiplcation */  \
+    _MATRIX_DEFINE_MAT_OP_MAT_MULT(n)           /* matrix-matrix multiplication */ \
+    _MATRIX_DEFINE_MAT_OP_EQUAL(n)              /* matrix equality */
+
+///
+// Element-wise operation between two matrices.
+// This could be addition or subtraction.
+//
+// @param l The first matrix to use in the operation
+// @param r The second matrix to use in the operation
+//
+// @return  The result of applying the operation
+///
+#define _MATRIX_DEFINE_MAT_OP_MM2M(n, def, op) \
+    inline Mat##n def (const Mat##n &l, const Mat##n &r) { \
+        return (Mat##n) { _MATRIX_JOINC(n, _MATRIX_ZIP, l, r, op) }; \
+    }
+
+///
+// Scalar multiplication of a matrix.
+//
+// @param v The matrix to scale
+// @param s The scaling factor
+//
+// @return  The scaled matrix
+///
+#define _MATRIX_DEFINE_MAT_OP_SCALE(n) \
+    inline Mat##n operator*(const Mat##n &v, const float s) { \
+        return (Mat##n) { _MATRIX_JOINC(n, _MATRIX_RMAP, v, * s) }; \
+    } \
+    inline Mat##n operator*(const float s, const Mat##n &v) { \
+        return (Mat##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, v, s *) }; \
+    }
 
 ///
 // Right multiplication of a vector with a matrix
@@ -168,9 +231,22 @@
 //
 // @return  The result of the right-multiplication (m * v)
 ///
-#define _MATRIX_DEFINE_OP_MV2V(n) \
+#define _MATRIX_DEFINE_MAT_OP_RVEC_MULT(n) \
     inline Vec##n operator*(const Mat##n &m, const Vec##n v) { \
         return _MATRIX_JOIN(n, _MATRIX_ZIP, +, m, v, *); \
+    }
+
+///
+// Left multiplication of a vector with a matrix
+//
+// @param m The matrix to multiply
+// @param v The vector to multiply
+//
+// @return  The result of the left-multiplication (v * m)
+///
+#define _MATRIX_DEFINE_MAT_OP_LVEC_MULT(n) \
+    inline Vec##n operator*(const Vec##n v, const Mat##n &m) { \
+        return (Vec##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, m, v *) }; \
     }
 
 ///
@@ -181,9 +257,22 @@
 //
 // @return  The result of the matrix multiplication (l * r)
 ///
-#define _MATRIX_DEFINE_OP_MM2M(n) \
+#define _MATRIX_DEFINE_MAT_OP_MAT_MULT(n) \
     inline Mat##n operator*(const Mat##n &l, const Mat##n &r) { \
         return (Mat##n) { _MATRIX_JOINC(n, _MATRIX_LMAP, r, l *) }; \
+    }
+
+///
+// Matrix equality
+//
+// @param l The first matrix
+// @param r The second matrix
+//
+// @return  True iff the two matrices have all equal elements
+///
+#define _MATRIX_DEFINE_MAT_OP_EQUAL(n) \
+    inline bool operator==(const Mat##n &l, const Mat##n &r) { \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, &&, l, r, ==); \
     }
 
 #endif
