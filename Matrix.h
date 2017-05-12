@@ -159,6 +159,9 @@
 #define _MATRIX_DEFINE_VEC_OP_EQUAL(n) \
     inline bool operator==(const Vec##n &l, const Vec##n &r) { \
         return _MATRIX_JOIN(n, _MATRIX_ZIP, &&, l, r, ==); \
+    } \
+    inline bool operator!=(const Vec##n &l, const Vec##n &r) { \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, ||, l, r, !=); \
     }
 
 //************//
@@ -273,6 +276,9 @@
 #define _MATRIX_DEFINE_MAT_OP_EQUAL(n) \
     inline bool operator==(const Mat##n &l, const Mat##n &r) { \
         return _MATRIX_JOIN(n, _MATRIX_ZIP, &&, l, r, ==); \
+    } \
+    inline bool operator!=(const Mat##n &l, const Mat##n &r) { \
+        return _MATRIX_JOIN(n, _MATRIX_ZIP, ||, l, r, !=); \
     }
 
 #endif
